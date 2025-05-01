@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  # Backend service (Node.js)
+  backend:
+    build:
+      context: ./server
+    container_name: backend
+    environment:
+      - DATABASE_URL=postgres://postgres:admin@db:5432/mydb
+      - JWT_SECRET=myverysecretkey
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+    networks:
+      - app-network
+
+  # Frontend service (React)
+  frontend:
+    build:
+      context: ./client
+    container_name: frontend
+    ports:
+      - "80:80"
+    networks:
+      - app-network
+
+  # PostgreSQL service
+  db:
+    image: postgres:16
+    container_name: db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=mydb
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  postgres-data:
+    driver: local
