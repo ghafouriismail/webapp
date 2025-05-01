@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3'
 
 services:
   # Backend service (Node.js)
@@ -10,7 +10,7 @@ services:
       - DATABASE_URL=postgres://postgres:admin@db:5432/mydb
       - JWT_SECRET=myverysecretkey
     ports:
-      - "5000:5000"
+      - "5001:5000"
     depends_on:
       - db
     networks:

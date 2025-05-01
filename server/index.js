@@ -17,14 +17,6 @@ const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
 });
 
-// Check PostgreSQL connection
-pool.connect()
-  .then(() => console.log('Connected to PostgreSQL'))
-  .catch(err => {
-    console.error('Connection error', err.stack);
-    process.exit(1); // Exit the process if DB connection fails
-  });
-
 // Create tables if they don’t exist (initial setup)
 const createTables = async () => {
   try {
@@ -43,13 +35,12 @@ const createTables = async () => {
         comment TEXT
       );
     `);
-    console.log('Tables created or already exist');
+    console.log('✅ Tables created or already exist');
   } catch (err) {
-    console.error('Error creating tables:', err);
+    console.error('❌ Error creating tables:', err);
+    throw err;
   }
 };
-
-createTables();
 
 // Signup endpoint
 app.post('/api/signup', async (req, res) => {
@@ -59,9 +50,14 @@ app.post('/api/signup', async (req, res) => {
     await pool.query('INSERT INTO users(username, password) VALUES($1, $2)', [username, hashed]);
     res.status(201).json({ message: 'User created' });
   } catch (err) {
-    console.error('Error signing up user:', err);
+    console.error('❌ Error signing up user:', err);
     res.status(400).json({ error: 'User already exists' });
   }
+});
+
+// Root test endpoint
+app.get('/', (req, res) => {
+  res.send('Hello World');
 });
 
 // Login endpoint
@@ -88,9 +84,24 @@ app.post('/api/contacts', async (req, res) => {
     );
     res.status(201).json({ message: 'Contact saved' });
   } catch (err) {
-    console.error('Error saving contact:', err);
+    console.error('❌ Error saving contact:', err);
     res.status(500).json({ error: 'Failed to save contact' });
   }
 });
 
-app.listen(port, () => console.log(`🚀 Server running on http://localhost:${port}`));
+// Startup function
+const startServer = async () => {
+  try {
+    await pool.connect();
+    console.log('✅ Connected to PostgreSQL');
+    await createTables();
+    app.listen(port, () => {
+      console.log(`🚀 Server running on http://localhost:${port}`);
+    });
+  } catch (err) {
+    console.error('❌ Server startup failed:', err);
+    process.exit(1);
+  }
+};
+
+startServer();
