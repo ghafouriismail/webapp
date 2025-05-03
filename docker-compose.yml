@@ -6,9 +6,8 @@ services:
     build:
       context: ./server
     container_name: backend
-    environment:
-      - DATABASE_URL=postgres://postgres:admin@db:5432/mydb
-      - JWT_SECRET=myverysecretkey
+    env_file:
+      - ./server/.env
     ports:
       - "5000:5000"
     depends_on:
