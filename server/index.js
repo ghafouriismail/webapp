@@ -97,7 +97,7 @@ const startServer = async () => {
     console.log('✅ Connected to PostgreSQL');
     await createTables();
     app.listen(port, () => {
-      console.log(`🚀 Server running on http://localhost:${port}`);
+      console.log(`🚀 Server running on http://0.0.0.0:${port}`);
     });
   } catch (err) {
     console.error('❌ Server startup failed:', err);
