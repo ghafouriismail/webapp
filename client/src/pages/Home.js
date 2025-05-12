@@ -10,7 +10,7 @@ function Home() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(`http://localhost/api/home`, {
+      const response = await axios.post(`/api/home`, {
         name,
         phonenumber: phoneNumber,
         email,
